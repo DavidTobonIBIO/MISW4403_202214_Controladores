@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MuseumModule } from './museum/museum.module';
@@ -18,6 +18,10 @@ import { MovementEntity } from './movement/movement.entity';
 import { MuseumEntity } from './museum/museum.entity';
 import { SponsorEntity } from './sponsor/sponsor.entity';
 import { MuseumArtworkModule } from './museum-artwork/museum-artwork.module';
+import { LoggerMiddleware } from './logger/logger.middleware';
+import { MuseumController } from './museum/museum.controller';
+import { MuseumArtworkController } from './museum-artwork/museum-artwork.controller';
+import { ArtworkController } from './artwork/artwork.controller';
 
 @Module({
   imports: [MuseumModule, ExhibitionModule, ArtworkModule, SponsorModule, ImageModule, ArtistModule, MovementModule,
@@ -26,7 +30,7 @@ import { MuseumArtworkModule } from './museum-artwork/museum-artwork.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'postgres',
+      password: '4568',
       database: 'museum',
       entities: [ArtistEntity, ArtworkEntity, ExhibitionEntity, ImageEntity, MovementEntity, MuseumEntity, SponsorEntity],
       dropSchema: true,
@@ -38,4 +42,10 @@ import { MuseumArtworkModule } from './museum-artwork/museum-artwork.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*')
+  }
+}
